@@ -16,7 +16,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
   <script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
-  <script src='https://cdn.rawgit.com/showdownjs/showdown/1.6.2/dist/showdown.min.js'></script>
+  <script src='https://cdn.rawgit.com/showdownjs/showdown/1.6.4/dist/showdown.min.js'></script>
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
   <link type="text/css" rel="stylesheet" href="css/solutionEngTemplate.css">
   <link type="text/css" rel="stylesheet" href="css/workshopIndex.css">
@@ -81,19 +81,18 @@
         </div>
     </div>
 -->
-    <div id='labguide' ng-bind-html='htmlContent' ng-show='selection.lab'>
+    <div id='labguide' ng-bind-html='to_trusted(htmlContent)' ng-show='selection.lab'>
         <!--   content filled dynamically     -->
     </div>
     <div id='returnToTop' layout layout-align="center center">
         <a href="#" layout-margin layout-padding>^ Return to Top</a>
     </div>
-    
-    
+
 <script type="text/javascript">
     angular.module('labGuide', ['ngMaterial', 'ngSanitize'])
-    
+
     .config(function($mdThemingProvider) {
-        
+
     var whiteBackground = $mdThemingProvider.extendPalette('grey', {
         '50': '#fefefe'
       });
@@ -107,26 +106,25 @@
           .accentPalette('orange')
           .warnPalette('red')
           .backgroundPalette('whiteBackground');
-      
+
     })
-    
-    .controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sanitize', 
-                                       function($scope, $http, $mdSidenav, $sanitize) {
-                                            
+
+    .controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sanitize', '$sce',
+                                       function($scope, $http, $mdSidenav, $sanitize, $sce) {
+
         $scope.selection = { "lab": false };
-                                           
+
         $http.get('manifest.json').then(function(res) {
-           $scope.manifest = res.data; 
+           $scope.manifest = res.data;
             console.log($scope.manifest);
         }, function(msg) {
             console.log('Error getting manifest.json!');
             console.log(msg);
         });
-        
+
         $scope.getLabGuide = function(lab) {
             if(lab.htmlContent == null) {
                 $http.get(lab.filename).then(function(res) {
-
                     var converter = new showdown.Converter(),
                     text = res.data,
                     html = converter.makeHtml(text);
@@ -138,7 +136,7 @@
                         $("#labguide h3").nextUntil("#labguide h1, #labguide h2, #labguide h3").hide();
                         $("#labguide h3").addClass('plus');
                         $("#labguide h3").click(function(e) {
-                            
+
                             var fadeOutStep = function(step) {
                                 $(step).nextUntil("#labguide h1, #labguide h2, #labguide h3").fadeOut();
                                 $(step).addClass('plus');
@@ -149,12 +147,12 @@
                                 $(step).addClass('minus');
                                 $(step).removeClass('plus');
                             };
-                            
+
                             if(e.offsetY < 0) { //user has clicked above the H3, in the expand/collapse all button
                                 if($(this).hasClass('first-in-section') && $(this).hasClass('plus')) {
                                   fadeInStep($(this));
                                   $(this).nextUntil("#labguide h1, #labguide h2", "h3").each(function(i, e) { return fadeInStep(e);} );
-                                }     
+                                }
                                 else if($(this).hasClass('first-in-section') && $(this).hasClass('minus')) {
                                   fadeOutStep($(this));
                                   $(this).nextUntil("#labguide h1, #labguide h2", "h3").each(function(i, e) { return fadeOutStep(e);} );
@@ -163,13 +161,13 @@
                             else { //user has clicked in the H3, only work on this step
                                 if($(this).hasClass('plus')) {
                                   fadeInStep($(this));
-                                } 
+                                }
                                 else if($(this).hasClass('minus')) {
                                   fadeOutStep($(this));
-                                } 
+                                }
                             }
                         });
-                        
+
                     }, 0);
 
                 }, function(msg) {
@@ -193,7 +191,7 @@
                     })
                 }
             }, 500)
-            
+
         }
         $scope.toggleLeft = function() {
             $mdSidenav('left').toggle();
@@ -201,11 +199,14 @@
         $scope.close = function() {
             $mdSidenav('left').close();
         };
-        
+        $scope.to_trusted = function(html_code) {
+          return $sce.trustAsHtml(html_code);
+        }
+
         //upon page load, display README
         $scope.getLabGuide({filename: 'README.md'});
     }]);
-    
+
 </script>
 </body>
 </html>
