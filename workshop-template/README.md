@@ -6,8 +6,6 @@
 - Rename the workshop-template folder in your new branch to the title of your new workshop, observing the naming convention of the rest of the folders in the repository
 - Rename the lab guide md files to be more specific to your workshop, if desired.
 - Update manifest.json with the titles and descriptions of your labs (and md filenames if you changed them).
-- Select theme choice for your manifest.json - current choices are: "default", "ttc"
-- Update the manifest.json with your interactive tour link (Note that by removing this in the JSON the tour launcher will be hidden)
 - Use LabGuide100.md as an example of how to format and structure your lab's markdown.
 - Preview your lab guides by loading index.html in your favorite editor's live view (Brackets - Live Preview, Atom - atom-live-server)
 

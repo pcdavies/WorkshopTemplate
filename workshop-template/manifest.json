@@ -2,8 +2,6 @@
     "workshop": {
         "title": "Workshop Title",
         "description": "Description of this workshop.",
-        "theme": "default",
-        "interactive":"https://launch.oracle.com/?cloudnative",
         "labs": [
             {
                 "number": "0",
