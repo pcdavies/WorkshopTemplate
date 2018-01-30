@@ -26,7 +26,8 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         };
 //        READ MANIFEST - THEME, INTERACTIVE, MENU
         $http.get('manifest.json').then(function (res) {
-            $scope.version = 'Instructor Led';
+            $scope.version = {};
+            $scope.version.selected = 'Instructor Led';
             $scope.manifest = res.data;
             console.log("json",$scope.manifest)
             if($scope.manifest.workshop.interactive){
@@ -45,7 +46,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             }
             $scope.versionsAvailable = [...new Set($scope.manifest.workshop.labs.map(lab => lab.labels && lab.labels.version))].filter(version => version != undefined);
             if($scope.versionsAvailable.length > 1) {
-              $scope.version = $scope.versionsAvailable[0];
+              $scope.version.selected = $scope.versionsAvailable[0];
             }
             $scope.openDialog = function() {
               $mdDialog.show(
@@ -73,6 +74,14 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         $scope.trustSrc = function (src) {
             return $sce.trustAsResourceUrl(src);
         }
+
+        $scope.$watch('version', function() {
+          if($scope.manifest) {
+            var newLab = $scope.manifest.workshop.labs.filter(lab => lab.labels && lab.labels.version == $scope.version.selected && lab.filename.includes("README"))[0]
+            $scope.getLabGuide(newLab);
+          }
+        }, true);
+
         $scope.loadContent = function (page) {
             $http.get(page).then(function (res) {
               var converter = new showdown.Converter({tables: true})
