@@ -53,7 +53,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
                 $mdDialog.alert()
                   .clickOutsideToClose(true)
                   .title('About Workshop Versions')
-                  .textContent('This workshop has multiple versions. You are currently viewing the ' + $scope.version + ' version of the lab guides. You can change the version any time using the selector at the top of the page.')
+                  .textContent('This workshop has multiple versions. You are currently viewing the ' + $scope.version.selected + ' version of the lab guides. You can change the version any time using the selector at the top of the page.')
                   .ariaLabel('Version Dialog')
                   .ok('Done')
                   .openFrom('#version-selector')
