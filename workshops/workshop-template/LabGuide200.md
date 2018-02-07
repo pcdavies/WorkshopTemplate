@@ -5,7 +5,7 @@ Updated: Date
 
 Introductory Text
 
-Please direct comments to: Owner
+**_To log issues_**, click here to go to the [github oracle](https://github.com/oracle/learning-library/issues/new) repository issue submission form.
 
 ## Objectives
 

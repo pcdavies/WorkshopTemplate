@@ -3,13 +3,52 @@
         "title": "Workshop Title",
         "description": "Description of this workshop.",
         "theme": "default",
-        "interactive":"https://launch.oracle.com/?cloudnative",
+        "interactive":"https://launch.oracle.com/?",
         "labs": [
+            {
+                "number": "100",
+                "filename": "LabGuide100.md",
+                "title": "Lab 100: Agile Project Management",
+                "description": "Use Developer Cloud Service to create issues, tasks, and sprints",
+                "labels": {
+                    "version": "Instructor Led"
+                }
+            },
+            {
+                "number": "200",
+                "filename": "LabGuide200.md",
+                "title": "Lab 200:  Title of Lab 200",
+                "description": "Short description of lab 200",
+                "labels": {
+                    "version": "Instructor Led"
+                }
+            },
+            {
+                "number": "300",
+                "filename": "LabGuide300.md",
+                "title": "Lab 300:  Title of Lab 300",
+                "description": "Short description of lab 300",
+                "labels": {
+                    "version": "Instructor Led"
+                }
+            },
+            {
+                "number": "400",
+                "filename": "LabGuide400.md",
+                "title": "Lab 400: Title of Lab 400",
+                "description": "Short description of lab 400",
+                "labels": {
+                    "version": "Instructor Led"
+                }
+            }
             {
                 "number": "0",
                 "filename": "README.md",
                 "title": "Read Me First",
-                "description": "Step-by-step workshop instructions"
+                "description": "Step-by-step workshop instructions",
+                "labels": {
+                    "version": "Self-Service"
+                }
             },
             {
                 "number": "0",
@@ -19,28 +58,41 @@
             },
             {
                 "number": "100",
-                "filename": "LabGuide100.md",
+                "filename": "LabGuide100-SS.md",
                 "title": "Lab 100: Agile Project Management",
-                "description": "Use Developer Cloud Service to create issues, tasks, and sprints"
+                "description": "SS: Use Developer Cloud Service to create issues, tasks, and sprints",
+                "labels": {
+                    "version": "Self-Service"
+                }
             },
             {
                 "number": "200",
-                "filename": "LabGuide200.md",
-                "title": "Lab 200:  Title of Lab 200",
-                "description": "Short description of lab 200"
+                "filename": "LabGuide200-SS.md",
+                "title": "Lab 200: Title of Lab 200",
+                "description": "SS: Short description of lab 200",
+                "labels": {
+                    "version": "Self-Service"
+                }
             },
             {
                 "number": "300",
-                "filename": "LabGuide300.md",
+                "filename": "LabGuide300-SS.md",
                 "title": "Lab 300:  Title of Lab 300",
-                "description": "Short description of lab 300"
+                "description": "SS: Short description of lab 300",
+                "labels": {
+                    "version": "Self-Service"
+                }
             },
             {
                 "number": "400",
-                "filename": "LabGuide400.md",
+                "filename": "LabGuide400-SS.md",
                 "title": "Lab 400: Title of Lab 400",
-                "description": "Short description of lab 400"
+                "description": "SS: Short description of lab 400",
+                "labels": {
+                    "version": "Self-Service"
+                }
             }
+
         ]
     }
 }
