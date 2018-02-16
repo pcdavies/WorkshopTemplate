@@ -38,14 +38,14 @@
 <!--    TOP TOOLBAR-->
     <md-toolbar class="md-hue-2 infra" flex="none" layout-padding>
         <div class="md-toolbar-tools infra">
-            <md-button class="md-icon-button md-raised md-accent infra" aria-label="menu-button" ng-disabled="false" ng-click="toggleLeft()">
+            <md-button class="md-icon-button md-raised md-accent infra" aria-label="menu-button" ng-disabled="hasMultipleVersions && !version.selected" ng-click="toggleLeft()">
                 <img src="https://oracle.github.io/learning-library/workshops/common-content/images/common/hamburger.png" class="menu-hamburger infra" />
             </md-button>
             <h2 class="infra" flex="noshrink">
                 <span class="infra">{{manifest.workshop.title}}</span>
             </h2>
             <div flex="grow" layout="row" layout-align="end center" >
-              <div ng-if="versionsAvailable.length > 1 && version.selected">
+              <div ng-if="hasMultipleVersions && version.selected">
                 <md-input-container flex-shrink>
                    <md-select name="version" ng-model="version.selected" id="version-selector" aria-label="Version Selector">
                      <md-option ng-repeat="version in versionsAvailable" value="{{version.name}}">{{version.name}}</md-option>

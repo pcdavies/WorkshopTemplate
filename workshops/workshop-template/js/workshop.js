@@ -22,7 +22,7 @@ labGuide.config(function ($mdThemingProvider) {
         .backgroundPalette('whiteBackground');
     $mdThemingProvider.theme('theme-1')
         .primaryPalette('light-green')
-        .accentPalette('brown')
+        .accentPalette('amber')
         .warnPalette('red')
         .backgroundPalette('whiteBackground');
     $mdThemingProvider.theme('theme-2')
