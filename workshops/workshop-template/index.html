@@ -57,7 +57,7 @@
                 <!-- <md-icon md-svg-icon="images/common/ic_home_black_24px.svg"></md-icon> -->
                 Home
               </md-button>
-              <md-button ng-class="{'high-contrast-hover': true, 'md-raised': false, 'md-accent': false, 'md-warn': selection == 'interactive' }" aria-label="Learn More" ng-click="showOrHideInteractiveTour()">
+              <md-button ng-class="{'high-contrast-hover': true, 'md-raised': selection == 'interactive', 'md-accent': false, 'md-warn': selection == 'interactive' }" aria-label="Learn More" ng-click="showOrHideInteractiveTour()">
                 {{selection == 'interactive' ? 'Exit' : ''}} Tour
               </md-button>
             </div>
