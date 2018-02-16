@@ -58,6 +58,11 @@ md-toolbar.md-hue-2:not(.md-menu-toolbar) {
     color: rgba(255, 255, 255, 0.87);
 }
 
+md-toolbar {
+  height: 50px;
+  min-height: 50px;
+}
+
 .menu-hamburger {
     padding: 4px 1px 1px 0px;
     height: 20px;
@@ -113,6 +118,10 @@ md-toolbar.md-hue-2:not(.md-menu-toolbar) {
     background-color: #006E87;
 }
 
+.md-button.md-default-theme.high-contrast-hover:hover {
+    background-color: rgb(10,10,90) !important;
+}
+
 .version-heading {
     margin-top: 50px;
     margin-left: 30px;
@@ -129,6 +138,17 @@ md-toolbar.md-hue-2:not(.md-menu-toolbar) {
   margin: 30px;
   margin-top: 0px;
   width: 400px;
+}
+
+.version-banner {
+  display: flex;
+  justify-content: center;
+}
+
+.version-title {
+  font-size: 1.1em;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .version-detail {

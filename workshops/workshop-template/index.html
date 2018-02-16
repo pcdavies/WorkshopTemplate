@@ -53,11 +53,11 @@
                  </md-input-container>
                  <img src="https://oracle.github.io/learning-library/workshops/common-content/images/common/ic_help_white_18dp_1x.png" ng-click="openDialog()" class="infra" flex-shrink style="margin-right: 100px;"/>
                </div>
-              <md-button class="md-raised md-accent" aria-label="Home" ng-click="showHomeOrVersionSelectPage()">
+              <md-button class="high-contrast-hover" aria-label="Home" ng-click="showHomeOrVersionSelectPage()">
                 <!-- <md-icon md-svg-icon="images/common/ic_home_black_24px.svg"></md-icon> -->
                 Home
               </md-button>
-              <md-button ng-class="{ 'md-raised': true, 'md-accent': selection != 'interactive', 'md-warn': selection == 'interactive' }" aria-label="Learn More" ng-click="showOrHideInteractiveTour()">
+              <md-button ng-class="{'high-contrast-hover': true, 'md-raised': false, 'md-accent': false, 'md-warn': selection == 'interactive' }" aria-label="Learn More" ng-click="showOrHideInteractiveTour()">
                 {{selection == 'interactive' ? 'Exit' : ''}} Tour
               </md-button>
             </div>
@@ -119,15 +119,15 @@
     <div class="version-box" ng-show="hasMultipleVersions && selection == 'chooseVersion'">
       <div ng-repeat="thisVersion in versionsAvailable" class="version-content">
         <md-toolbar ng-class="{ infra: true }" md-theme="theme-{{$index}}" flex="none" layout-padding>
-            <div class="md-toolbar-tools infra">
-              <h3 class="infra">{{thisVersion.name}}</h3>
+            <div class="md-toolbar-tools infra version-banner">
+              <span class="infra version-title">{{thisVersion.name}}</span>
             </div>
         </md-toolbar>
         <md-content class="infra">
           <div class="infra version-detail">
             <span class="infra">{{thisVersion.description}}</span>
             <img ng-src="{{thisVersion.imageUrl}}" class="infra" />
-            <md-button class="infra md-raised md-primary" ng-click="version.selected = thisVersion.name">
+            <md-button class="infra md-raised md-primary high-contrast-hover" ng-click="version.selected = thisVersion.name">
               Select {{thisVersion.name}} Version
             </md-button>
           </div>
