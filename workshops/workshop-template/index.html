@@ -134,7 +134,7 @@
         </md-content>
       </div>
     </div>
-    <iframe id='interactive' ng-src='{{trustSrc(interactive.src)}}' ng-if="selection == 'interactive'"></iframe>
+    <iframe id='interactive' class="infra" ng-src='{{trustSrc(interactive.src)}}' ng-if="selection == 'interactive'"></iframe>
     <div id='labguide' ng-bind-html='htmlContent' ng-show="selection == 'lab'">
         <!--   content filled dynamically     -->
     </div>

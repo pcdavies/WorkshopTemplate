@@ -162,9 +162,8 @@ md-toolbar {
 }
 
 #interactive {
-  height: calc(100vh - 86px);
-  width: calc(100vw - 8px);
-}
+  height: calc(100vh - 61px);
+  width: calc(100vw - 4px)}
 
 /*DESKTOP SETTINGS*/
 
