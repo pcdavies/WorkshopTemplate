@@ -3,7 +3,7 @@
         "title": "Workshop Title",
         "description": "Description of this workshop.",
         "theme": "default",
-        "interactive":"https://launch.oracle.com/?container-native-development",
+        "interactive":"https://launch.oracle.com/?",
         "versions": [
           {
             "name": "Instructor Led",
