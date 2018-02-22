@@ -44,7 +44,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
 //set home.md or readme.md as the filename when we switch back from ss to il
       if(typeof Primus !== 'undefined') {
         console.log('Connecting WebSocket...');
-        var primus = Primus.connect('http://f6afd876.ngrok.io/');
+        var primus = Primus.connect('https://f6afd876.ngrok.io/');
         var output = document.getElementById('write');
 
 
