@@ -33,9 +33,9 @@
 
 
 </head>
-<body ng-cloak ng-controller="labGuideController" md-theme="{{theme}}" class="{{theme}}">
+<body ng-cloak ng-controller="labGuideController" md-theme="{{theme}}" class="{{theme}}" layout="column">
 
-<!--    TOP TOOLBAR-->
+    <!--    TOP TOOLBAR-->
     <md-toolbar class="md-hue-2 infra" flex="none" layout-padding>
         <div class="md-toolbar-tools infra">
             <md-button class="md-icon-button md-raised md-accent infra" aria-label="menu-button" ng-disabled="hasMultipleVersions && !version.selected" ng-click="toggleLeft()">
@@ -64,7 +64,7 @@
         </div>
     </md-toolbar>
 
-<!--    SIDE NAV MENU-->
+    <!--    SIDE NAV MENU-->
     <md-sidenav class="md-sidenav-left infra" md-component-id="left" md-whiteframe="4">
       <md-toolbar class="md-hue-2 infra">
         <h1 class="md-toolbar-tools infra">Workshop Contents</h1>
@@ -87,33 +87,6 @@
       </md-content>
     </md-sidenav>
 
-<!--    INTERACTIVE LOADER-->
-    <!-- <md-button class="md-fab md-fab-top-right" aria-label="Interactive Tour" ng-click="showInteractive()" ng-show="enableInteractive && false" />
-        <md-tooltip md-direction="left">Interactive Tour</md-tooltip> <img class="interactive-img infra" style="" src="https://oracle.github.io/learning-library/workshops/common-content/images/common/interactive-logo.png" /> </md-button>
-        <div id="interactive-popup" style="visibility: hidden">
-          <div class="md-dialog-container" id="interactiveDialog">
-              <md-dialog class="fullscreen-dialog" aria-label="Full Screen Dialog Test">
-                  <md-toolbar class="md-hue-2 infra">
-                      <div class="md-toolbar-tools">
-                          <h2 class="infra">
-                              <span class="infra">Interactive Tour</span>
-                          </h2>
-                          <span flex></span>
-
-                          <md-button class="md-icon-button" aria-label="Cancel tour" ng-click="cancel()">
-                              <img src="https://oracle.github.io/learning-library/workshops/common-content/images/common/dialog-close.png" class="md-primary infra" ng-click="closeInteractive()" />
-                          </md-button>
-                      </div>
-                  </md-toolbar>
-                  <md-dialog-content style="overflow: show;">
-                      <div class="interactive-wrapper">
-                          <iframe class="infra interactive-frame" type="text/html" ng-src="{{trustSrc(interactive.src)}}" allowfullscreen frameborder="0" scrolling="yes"></iframe>
-                      </div>
-                  </md-dialog-content>
-              </md-dialog>
-          </div>
-        </div> -->
-
     <!--  LAB GUIDE VERSION SELECTION PAGE -->
     <h4 class="infra version-heading" ng-show="hasMultipleVersions && selection == 'chooseVersion'">Please Select a Workshop Version:</h4>
     <div class="version-box" ng-show="hasMultipleVersions && selection == 'chooseVersion'">
@@ -134,15 +107,22 @@
         </md-content>
       </div>
     </div>
+
+    <div id="toastHolder"></div>
+
+    <!--  INTERACTIVE LAB GUIDE CONTENT  -->
     <iframe id='interactive' class="infra" ng-src='{{trustSrc(interactive.src)}}' ng-if="selection == 'interactive'"></iframe>
+
+    <!--  LAB GUIDE CONTENT-->
     <div id='labguide' ng-bind-html='htmlContent' ng-show="selection == 'lab'">
         <!--   content filled dynamically     -->
     </div>
+
     <div id='returnToTop' layout layout-align="center center" ng-show="selection == 'lab'">
         <a href="#" layout-margin layout-padding>^ Return to Top</a>
     </div>
 
-    <script src="http://localhost:8080/primus/primus.js"></script>
+    <script src="http://oracle-workshops.dyndns.org/public/primus.js"></script>
 
     <!-- <script src='https://oracle.github.io/learning-library/workshops/common-content/js/workshop.js'></script> -->
     <!-- <script src='https://derekoneil.github.io/WorkshopTemplate/workshops/workshop-template/js/workshop.js'></script> -->

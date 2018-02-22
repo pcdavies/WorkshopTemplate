@@ -33,12 +33,24 @@ labGuide.config(function ($mdThemingProvider) {
     $mdThemingProvider.alwaysWatchTheme(true);
 });
 
+labGuide.controller('ToastCtrl', function($scope, $mdToast) {
+  $scope.closeToast = function() {
+    $mdToast.hide();
+  };
+});
+
 labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sanitize', '$sce', '$mdDialog', '$mdToast'
     , function ($scope, $http, $mdSidenav, $sanitize, $sce, $mdDialog, $mdToast) {
 //set home.md or readme.md as the filename when we switch back from ss to il
-      if(!typeof Primus == undefined) {
-        var primus = Primus.connect('http://localhost:8080');
+      if(typeof Primus !== 'undefined') {
+        console.log('Connecting WebSocket...');
+        var primus = Primus.connect('http://f6afd876.ngrok.io/');
         var output = document.getElementById('write');
+
+
+      }
+      else {
+        console.log('Primus not found. No WebSocket available.');
       }
       //
       // Listen for incoming data and log it in our textarea.
@@ -49,6 +61,12 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
           // output.value += data.text +'\n';
           $scope.showCustomToast(data);
         });
+        primus.on('open', () =>
+          {
+            console.log('Location: ' + location.pathname);
+            primus.write(location.pathname);
+          }
+        );
       }
       //
       // Listen for submits of the form so we can send the message to the server.
@@ -62,26 +80,42 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
       //   echo.value = '';
       // };
 
-        $scope.toast = $mdToast;
-        $scope.showCustomToast = function(data) {
+      $scope.toast = $mdToast;
+      $scope.toastPromise = {};
+      $scope.showCustomToast = function(data) {
+        if($scope.selection === 'lab') {
           $mdToast.show({
             hideDelay   : 0,
-            position    : 'top right',
+            position    : 'bottom right',
             scope       : $scope,
+            preserveScope : true,
+            parent      : document.querySelector('#toastHolder'),
+            // controller  : 'labGuideController',
+            controllerAs     : 'toast',
+            bindToController : true,
             template : '<md-toast> \
                           <span class="md-toast-text">'+ data.text +'</span> \
                           <md-button class="md-highlight" ng-click="refreshLabGuide($event)"> \
                              Reload \
                            </md-button> \
-                           <md-button ng-click="toast.hide()"> \
+                           <md-button ng-click="closeToast()"> \
                              Close \
                            </md-button> \
                         </md-toast>'
-          });
+                      }).then(() => console.log('toast closed!'));
+          }
         };
 
+        $scope.closeToast = function() {
+          $mdToast.hide();
+        }
+
         $scope.refreshLabGuide = function(e) {
-          $scope.getLabGuide({ filename: $scope.currentFilename });
+          console.log('Refreshing lab guide: ' + $scope.currentFilename);
+          if($scope.selection === 'lab') {
+            $scope.getLabGuide({ filename: $scope.currentFilename });
+          }
+          $mdToast.hide();
         };
 
         $scope.theme = 'default';
@@ -91,6 +125,10 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         $http.get('manifest.json').then(function (res) {
             $scope.version = {};
             $scope.manifest = res.data;
+            // if(typeof primus !== 'undefined') {
+            //   primus.write(res.data.workshop.title);
+            //   console.log('Sending workshop title to primus: ' + res.data.workshop.title);
+            // }
             // $scope.manifest.workshop.labs.unshift({ title: 'Home', description: 'Return to the Workshop Home Page', filename: 'README.md'})
             console.log("json",$scope.manifest)
             if($scope.manifest.workshop.interactive){
@@ -215,7 +253,9 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         };
 
         $scope.loadContent = function (page) {
+            console.log('Loading page: ' + page);
             $http.get(page).then(function (res) {
+              console.log('Got page: ' + page);
               var converter = new showdown.Converter({tables: true})
                 , text = res.data;
               converter.setFlavor('github');
