@@ -44,7 +44,8 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
 //set home.md or readme.md as the filename when we switch back from ss to il
       if(typeof Primus !== 'undefined') {
         console.log('Connecting WebSocket...');
-        var primus = Primus.connect('http://oracle-workshops.dyndns.org');
+        var primus = Primus.connect('https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com');
+');
         var output = document.getElementById('write');
 
 
