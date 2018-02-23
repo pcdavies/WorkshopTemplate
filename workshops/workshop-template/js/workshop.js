@@ -45,7 +45,6 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
       if(typeof Primus !== 'undefined') {
         console.log('Connecting WebSocket...');
         var primus = Primus.connect('https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com');
-');
         var output = document.getElementById('write');
 
 
