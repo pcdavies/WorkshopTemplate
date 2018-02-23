@@ -1,3 +1,7 @@
+
+const primusEndpointUrl = 'https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com';
+const primusJsUrl = 'https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com/public/primus.js';
+
 var labGuide = angular.module('labGuide', ['ngMaterial', 'ngSanitize']);
 
 labGuide.config(function ($mdThemingProvider) {
@@ -41,44 +45,46 @@ labGuide.controller('ToastCtrl', function($scope, $mdToast) {
 
 labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sanitize', '$sce', '$mdDialog', '$mdToast'
     , function ($scope, $http, $mdSidenav, $sanitize, $sce, $mdDialog, $mdToast) {
-//set home.md or readme.md as the filename when we switch back from ss to il
-      if(typeof Primus !== 'undefined') {
-        console.log('Connecting WebSocket...');
-        var primus = Primus.connect('http://oracle-workshops.dyndns.org');
-        var output = document.getElementById('write');
 
-
-      }
-      else {
-        console.log('Primus not found. No WebSocket available.');
-      }
-      //
-      // Listen for incoming data and log it in our textarea.
-      //
-      if(primus) {
-        primus.on('data', function received(data) {
-          console.log(data);
-          // output.value += data.text +'\n';
-          $scope.showCustomToast(data);
-        });
-        primus.on('open', () =>
-          {
-            console.log('Location: ' + location.pathname);
-            primus.write(location.pathname);
+      loadScript(primusJsUrl, () => {
+        if(typeof Primus !== 'undefined') {
+          console.log('Connecting WebSocket...');
+          var primus = Primus.connect(primusEndpointUrl);
+          if(primus) {
+            primus.on('data', function received(data) {
+              console.log(data);
+              // output.value += data.text +'\n';
+              $scope.showCustomToast(data);
+            });
+            primus.on('open', () =>
+              {
+                console.log('Location: ' + location.pathname);
+                primus.write(location.pathname);
+              }
+            );
           }
-        );
+        }
+        else {
+          console.log('Primus not found. No WebSocket available.');
+        }
+      });
+
+      function loadScript(url, callback)
+      {
+          // Adding the script tag to the head as suggested before
+          var head = document.getElementsByTagName('head')[0];
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = url;
+
+          // Then bind the event to the callback function.
+          // There are several events for cross browser compatibility.
+          script.onreadystatechange = callback;
+          script.onload = callback;
+
+          // Fire the loading
+          head.appendChild(script);
       }
-      //
-      // Listen for submits of the form so we can send the message to the server.
-      //
-      // document.getElementById('write').onsubmit = function submit(e) {
-      //   if (e && e.preventDefault) e.preventDefault();
-      //   //
-      //   // Write the typed message.
-      //   //
-      //   primus.write(echo.value);
-      //   echo.value = '';
-      // };
 
       $scope.toast = $mdToast;
       $scope.toastPromise = {};
@@ -90,7 +96,6 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             scope       : $scope,
             preserveScope : true,
             parent      : document.querySelector('#toastHolder'),
-            // controller  : 'labGuideController',
             controllerAs     : 'toast',
             bindToController : true,
             template : '<md-toast> \
@@ -219,11 +224,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             }
           }
         }, true);
-        //
-        // $scope.selectVersion = function (version, index) {
-        //   // $scope.version.selected = version.name;
-        //
-        // };
+
 
         $scope.showHomeOrVersionSelectPage = function() {
           if($scope.hasMultipleVersions) {
@@ -241,7 +242,6 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         };
 
         $scope.showOrHideInteractiveTour = function() {
-          // $scope.htmlContent = $scope.trustSrc($scope.interactive.src);
           if($scope.selection == 'interactive') {
             $scope.selection = $scope.previousSelection;
             $scope.previousSelection = 'interactive';
@@ -344,18 +344,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         $scope.close = function () {
             $mdSidenav('left').close();
         };
-        // $scope.cancel = function () {
-        //     $mdDialog.cancel();
-        // };
-        // $scope.showInteractive = function (ev) {
-        //     $mdDialog.show({
-        //         contentElement: '#interactiveDialog'
-        //         , parent: angular.element(document.body)
-        //         , targetEvent: ev
-        //         , clickOutsideToClose: true
-        //         , fullscreen: true
-        //     });
-        // };
+
     }]);
 
     labGuide.filter('versionFilter', function() {
