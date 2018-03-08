@@ -250,7 +250,7 @@ html {
   color: #444;
   font-family: 'Roboto', sans-serif;
   background-color: white;
-  line-height: 1.85;  
+  line-height: 1.85;
   height: auto;
   margin: 0 auto;
   max-width: 55rem;
@@ -314,12 +314,13 @@ blockquote:not(.infra) {
   padding: 1rem;
 }
 
-pre:not(.infra),
-code:not(.infra) {
+pre:not(.infra) {
   background-color: #f3f3f3;
   margin: .4rem;
+}
 
-
+code:not(.infra) {
+  background-color: #f3f3f3;
 }
 
 #introduction {
