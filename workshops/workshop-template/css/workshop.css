@@ -4,7 +4,6 @@ html,
 body {
     padding: 0;
     max-width: 100%;
-    overflow-y: hidden !important;
 }
 
 td {
@@ -57,11 +56,6 @@ md-dialog.fullscreen-dialog {
 md-toolbar.md-default-theme.md-hue-2:not(.md-menu-toolbar),
 md-toolbar.md-hue-2:not(.md-menu-toolbar) {
     color: rgba(255, 255, 255, 0.87);
-}
-
-md-toolbar {
-  height: 50px;
-  min-height: 50px;
 }
 
 .menu-hamburger {
@@ -127,6 +121,25 @@ md-toolbar {
   flex-shrink: 0;
 }
 
+/* body > md-toolbar > div > h2:after {
+    content: ': LAB NAME';
+} */
+
+md-toolbar {
+  height: 50px;
+  min-height: 50px;
+}
+
+.md-toolbar-tools.infra {
+  height: 50px;
+  max-height: 50px;
+}
+
+md-toolbar.layout-padding.infra {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .version-heading {
     margin-top: 50px;
     margin-left: 30px;
@@ -140,9 +153,9 @@ md-toolbar {
 .version-content {
   /* flex-grow: 33; */
   border: 1px solid lightgrey;
-  margin: 30px;
+  margin: 25px;
   margin-top: 0px;
-  width: 400px;
+  width: 350px;
 }
 
 .version-banner {
@@ -165,6 +178,9 @@ md-toolbar {
   font-size: medium;
   margin-top: 10px;
   align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  overflow-x: hidden;
 }
 
 #interactive {
@@ -172,9 +188,9 @@ md-toolbar {
   width: calc(100vw - 4px)}
 
 #labguide {
-  height: 100vh;
+  /* height: 100vh; */
   /* overflow-y: hidden !important; */
-  overflow: scroll;
+  /* overflow: scroll; */
 }
 
 #toastHolder {

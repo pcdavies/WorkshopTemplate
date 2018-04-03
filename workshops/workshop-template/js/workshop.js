@@ -1,6 +1,8 @@
 
-const primusEndpointUrl = 'https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com';
-const primusJsUrl = 'https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com/public/primus.js';
+// const primusEndpointUrl = 'https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com';
+// const primusJsUrl = 'https://githubmonitor-derekoneill.uscom-central-1.oraclecloud.com/public/primus.js';
+const primusEndpointUrl = 'http://localhost:8080';
+const primusJsUrl = 'http://localhost:8080/public/primus.js';
 
 var labGuide = angular.module('labGuide', ['ngMaterial', 'ngSanitize']);
 
@@ -37,29 +39,27 @@ labGuide.config(function ($mdThemingProvider) {
     $mdThemingProvider.alwaysWatchTheme(true);
 });
 
-labGuide.controller('ToastCtrl', function($scope, $mdToast) {
-  $scope.closeToast = function() {
-    $mdToast.hide();
-  };
-});
-
 labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sanitize', '$sce', '$mdDialog', '$mdToast'
     , function ($scope, $http, $mdSidenav, $sanitize, $sce, $mdDialog, $mdToast) {
 
       loadScript(primusJsUrl, () => {
         if(typeof Primus !== 'undefined') {
           console.log('Connecting WebSocket...');
-          var primus = Primus.connect(primusEndpointUrl);
-          if(primus) {
-            primus.on('data', function received(data) {
-              console.log(data);
-              // output.value += data.text +'\n';
-              $scope.showCustomToast(data);
+          $scope.primus = Primus.connect(primusEndpointUrl);
+          if($scope.primus) {
+            $scope.primus.on('data', function received(data) {
+              console.log('primus received data: ' + data);
+              if(data && data.includes('GitHub')) {
+                $scope.showCustomToast(data, 0, true, false);
+                console.log('sent toast');
+              }
             });
-            primus.on('open', () =>
+            $scope.primus.on('open', () =>
               {
+                let workshopName = location.pathname.split('/').slice(-2, -1)[0];
                 console.log('Location: ' + location.pathname);
-                primus.write(location.pathname);
+                console.log('Workshop: ' + workshopName);
+                $scope.primus.write({'workshop': workshopName});
               }
             );
           }
@@ -86,12 +86,23 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
           head.appendChild(script);
       }
 
+      function logToServer(severity, message) {
+        if($scope.primus) {
+          $scope.primus.write(
+            {'log':
+              {'severity': severity,
+               'message': message
+              }
+            });
+        }
+      };
+
       $scope.toast = $mdToast;
       $scope.toastPromise = {};
-      $scope.showCustomToast = function(data) {
-        if($scope.selection === 'lab') {
+      $scope.showCustomToast = function(data, delay, showReload, alwaysShow) {
+        if($scope.selection === 'lab' || alwaysShow) {
           $mdToast.show({
-            hideDelay   : 0,
+            hideDelay   : delay,
             position    : 'bottom right',
             scope       : $scope,
             preserveScope : true,
@@ -99,11 +110,9 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             controllerAs     : 'toast',
             bindToController : true,
             template : '<md-toast> \
-                          <span class="md-toast-text">'+ data.text +'</span> \
-                          <md-button class="md-highlight" ng-click="refreshLabGuide($event)"> \
-                             Reload \
-                           </md-button> \
-                           <md-button ng-click="closeToast()"> \
+                          <span class="md-toast-text">'+ data.text +'</span>' +
+                          (showReload ? '<md-button class="md-highlight" ng-click="refreshLabGuide($event)"> Reload </md-button> ' : '') +
+                           '<md-button ng-click="closeToast()"> \
                              Close \
                            </md-button> \
                         </md-toast>'
@@ -115,13 +124,13 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
           $mdToast.hide();
         }
 
-        $scope.refreshLabGuide = function(e) {
-          console.log('Refreshing lab guide: ' + $scope.currentFilename);
-          if($scope.selection === 'lab') {
-            $scope.getLabGuide({ filename: $scope.currentFilename });
-          }
-          $mdToast.hide();
-        };
+        // $scope.refreshLabGuide = function(e) {
+        //   console.log('Refreshing lab guide: ' + $scope.currentFilename);
+        //   if($scope.selection === 'lab') {
+        //     $scope.getLabGuide({ filename: $scope.currentFilename });
+        //   }
+        //   $mdToast.hide();
+        // };
 
         $scope.theme = 'default';
         $scope.selection = "";
@@ -130,11 +139,6 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         $http.get('manifest.json').then(function (res) {
             $scope.version = {};
             $scope.manifest = res.data;
-            // if(typeof primus !== 'undefined') {
-            //   primus.write(res.data.workshop.title);
-            //   console.log('Sending workshop title to primus: ' + res.data.workshop.title);
-            // }
-            // $scope.manifest.workshop.labs.unshift({ title: 'Home', description: 'Return to the Workshop Home Page', filename: 'README.md'})
             console.log("json",$scope.manifest)
             if($scope.manifest.workshop.interactive){
                // $scope.enableInteractive = true;
@@ -175,17 +179,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             //   storage.setItem('dialog-shown', 'true');
             // }
 
-            if($scope.hasMultipleVersions) {
-              console.log('Workshop has multiple versions');
-              $scope.selection = "chooseVersion";
-            }
-            else {
-              //upon manifest load, display Home
-              $scope.currentFilename = "Home.md";
-              $scope.getLabGuide({
-                  filename: 'Home.md'
-              });
-            }
+            preparePage();
 
         }, function (msg) {
             console.log('Error getting manifest.json!');
@@ -194,44 +188,101 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
         $scope.trustSrc = function (src) {
             return $sce.trustAsResourceUrl(src);
         }
+        var preparePage = function() {
+          if(parseQueryString()) {
+            console.log('Parsed query string. Going to: ' + $scope.version.selected + ' -- ' + $scope.currentFilename);
+            if(!$scope.hasMultipleVersions)
+              $scope.getLabGuide({
+                  filename: $scope.currentFilename
+              });
+          }
+          else {
+            if($scope.hasMultipleVersions) {
+              console.log('Workshop has multiple versions');
+              $scope.selection = "chooseVersion";
+            }
+            else {
+              console.log('Workshop has only one version. Going to Home.md.');
+              //upon manifest load, display Home
+              $scope.currentFilename = "Home.md";
+            }
+          }
+
+          if(!$scope.hasMultipleVersions) {
+            $scope.getLabGuide({
+                filename: $scope.currentFilename
+            });
+          }
+        };
+
+        var parseQueryString = function() {
+          var success = false;
+          if ('URLSearchParams' in window) {
+            let searchParams = new URLSearchParams(window.location.search);
+            console.log('Query Params:');
+            console.log(searchParams.get("version"));
+            console.log(searchParams.get("page"));
+
+            let page = searchParams.get("page");
+            let version = searchParams.get("version");
+
+            if(page && (version || !$scope.hasMultipleVersions) ) {
+              $scope.currentFilename = page || undefined;
+              $scope.version.selected = version || undefined;
+              success = true;
+            }
+          }
+          return success;
+        }
 
         $scope.$watch('version.selected', function() {
-          if($scope.manifest && undefined != typeof $scope.version.selected) {
-            // $scope.version.selected = $scope.version.name;
+          if(typeof $scope.version == 'undefined' || typeof $scope.version.selected ==='undefined') {
+            $scope.theme = 'default';
+          }
+
+          if($scope.manifest && 'undefined' != typeof $scope.version.selected) {
+            console.log('Version selcted: ' + $scope.version.selected);
             var themeNumber = $scope.versionsAvailable.findIndex(elem => elem.name === $scope.version.selected);
             if(themeNumber >= 0) {
               $scope.theme = 'theme-' + themeNumber;
             }
             else $scope.theme = 'default';
 
-            // $scope.selectVersion($scope.version, );
-            var newLab = $scope.manifest.workshop.labs.filter(lab => lab.labels && lab.labels.version == $scope.version.selected )[0];
-            var filename = ""; //"Home.md";
-            if(newLab) {
-                filename = newLab.filename;
+            //check this list for the filename in the query string -- if there, choose it. if not there, revert to 0th entry and give an error toast.
+            let labsInThisVersion = $scope.manifest.workshop.labs.filter(lab => lab.labels && lab.labels.version == $scope.version.selected);
+            if(labsInThisVersion.length > 0) {
+              var newLab = labsInThisVersion.find(elem => elem.filename === $scope.currentFilename) || labsInThisVersion[0];
+              var filename = "";
+              if(newLab) {
+                  filename = newLab.filename;
+              }
+              if(filename != "") {
+                $scope.previousSelection = $scope.selection;
+                $scope.selection = "lab";
+                $scope.currentFilename = filename;
+                $scope.getLabGuide({ filename: filename});
+              }
             }
-            if(filename != "") {
-              $scope.previousSelection = $scope.selection;
-              $scope.selection = "lab";
-              $scope.currentFilename = filename;
-              $scope.getLabGuide({ filename: filename});
-            }
-            else {
-              $scope.currentFilename = "";
-              $scope.previousSelection = $scope.selection;
-              $scope.selection = "chooseVersion";
-              $scope.version.selected = undefined;
+            else { //Version in query string not found
+              console.log('Version: ' + $scope.version.selected + ' not found');
+              $scope.showCustomToast({'text': 'Version: ' + $scope.version.selected + ' not found!'}, 5000, false, true);
+              $scope.showHomeOrVersionSelectPage();
             }
           }
         }, true);
 
+        $scope.resetVersionAndFilename = function() {
+          history.replaceState('', '', window.location.pathname);
+          $scope.currentFilename = "";
+          $scope.previousSelection = $scope.selection;
+          $scope.selection = "chooseVersion";
+          $scope.version.selected = undefined;
+          updateFilenameInHeader(undefined);
+        }
 
         $scope.showHomeOrVersionSelectPage = function() {
           if($scope.hasMultipleVersions) {
-            $scope.previousSelection = $scope.selection;
-            $scope.selection = "chooseVersion";
-            $scope.currentFilename = '';
-            $scope.version.selected = undefined;
+            $scope.resetVersionAndFilename();
           }
           else {
             $scope.currentFilename = "Home.md";
@@ -271,23 +322,57 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
                   $("#labguide h3").addClass('plus');
                   $("#labguide h3").unbind('click', stepClickHandler);
                   $("#labguide h3").click(stepClickHandler);
+                  window.scrollTo(0, 0);
               }, 0);
             }, function (msg) {
                 if(page === 'Home.md') {
                   console.log('Home.md not found. Displaying README.md...');
                   $scope.currentFilename = "README.md";
-                  $scope.getLabGuide({
-                    filename: 'README.md'
-                  });
+                  $scope.getLabGuide({ filename: 'README.md' });
                 }
                 else {
+                  $scope.showCustomToast({'text': 'File: ' + page + ' not found!'}, 5000, false, true);
+                  $scope.currentFilename = 'README.md';
+                  $scope.getLabGuide({ filename: 'README.md' });
                   console.log('Error getting lab guide markdown!');
                   console.log(msg);
                 }
             });
         }
+        var updateFilenameInHeader = function(filename) {
+          var headerElement = document.getElementsByTagName('h2')[0];
+          var labElement = document.createElement('span');
+          labElement.textContent = '- ' + filename;
+
+          if(headerElement.children[1])
+            headerElement.removeChild(headerElement.children[1]);
+
+          if(filename)
+            headerElement.appendChild(labElement);
+
+        }
+
+        var loadPage = window.history.state;
+        window.onpopstate = function(event) {
+          console.log('popstate event was fired');
+
+            if (loadPage) {
+            }
+
+        };
         $scope.getLabGuide = function (lab) {
+            logToServer('info', 'Getting lab guide: '+lab.filename);
+            if ('URLSearchParams' in window) {
+              var searchParams = new URLSearchParams(window.location.search);
+              if($scope.version.selected) {
+                searchParams.set("version", $scope.version.selected);
+              }
+              searchParams.set("page", lab.filename);
+              var newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
+              history.replaceState(null, '', newRelativePathQuery);
+            }
             $scope.currentFilename = lab.filename;
+            updateFilenameInHeader(lab.filename);
             $scope.loadContent(lab.filename);
 
             setTimeout(function () {
@@ -295,8 +380,9 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
                     if (this.href.endsWith('.md')) {
                         $(this).on("click", function (event) {
                             event.preventDefault();
+                            console.log('clicked on: ' + this.getAttribute('href'));
                             $scope.getLabGuide({
-                                filename: this.href
+                                filename: this.getAttribute('href')
                             });
                         });
                     }
