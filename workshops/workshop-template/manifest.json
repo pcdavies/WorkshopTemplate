@@ -7,8 +7,8 @@
         "labs": [
             {
                 "number": "0",
-                "filename": "Intro-Instructor-Led.md",
-                "title": "Intro - Instructor Led",
+                "filename": "Intro.md",
+                "title": "Workshop Introduction",
                 "description": "Step-by-step workshop instructions"
 
             },
