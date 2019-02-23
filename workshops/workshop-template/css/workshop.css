@@ -121,10 +121,6 @@ md-toolbar.md-hue-2:not(.md-menu-toolbar) {
   flex-shrink: 0;
 }
 
-/* body > md-toolbar > div > h2:after {
-    content: ': LAB NAME';
-} */
-
 md-toolbar {
   height: 50px;
   min-height: 50px;

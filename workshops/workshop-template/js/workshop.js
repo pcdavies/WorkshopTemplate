@@ -316,6 +316,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
               $scope.htmlContent = html;
               $scope.selection = 'lab';
               page.htmlContent = html;
+
               setTimeout(function () {
                   $("#labguide h2").next("h3").addClass("first-in-section");
                   $("#labguide h3").nextUntil("#labguide h1, #labguide h2, #labguide h3").hide();
@@ -360,6 +361,34 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             }
 
         };
+        $scope.updateTrialUrl = function() {
+          let searchParams = new URLSearchParams(window.location.search);
+          var sourceType = searchParams.get("sourceType");
+          var intcmp = searchParams.get("intcmp");
+          var sc = searchParams.get("SC");
+          var pcode = searchParams.get("pcode");
+
+          if(sourceType || intcmp || sc || pcode) {
+            let trialLink = "https://myservices.us.oraclecloud.com/mycloud/signup?language=en";
+            if(sourceType) {
+              trialLink += "&sourceType=" + sourceType;
+            }
+            if(intcmp) {
+              trialLink += "&intcmp=" + intcmp;
+            }
+            if(sc) {
+              trialLink += "&SC=" + sc;
+            }
+            if(pcode) {
+              trialLink += "&pcode=" + pcode;
+            }
+            let linkList = document.getElementsByClassName("trial-link");
+            for (let link of linkList) {
+              link.setAttribute('href', trialLink);
+            }
+          }
+        };
+
         $scope.getLabGuide = function (lab) {
             logToServer('info', 'Getting lab guide: '+lab.filename);
             if ('URLSearchParams' in window) {
@@ -376,7 +405,7 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
             $scope.loadContent(lab.filename);
 
             setTimeout(function () {
-                $("#labguide a").each(function () {
+              $("#labguide a").each(function () {
                     if (this.href.endsWith('.md')) {
                         $(this).on("click", function (event) {
                             event.preventDefault();
@@ -388,6 +417,10 @@ labGuide.controller('labGuideController', ['$scope', '$http', '$mdSidenav', '$sa
                     }
                 })
             }, 500);
+
+            setTimeout(function () {
+              $scope.updateTrialUrl();
+            }, 2000);
         }
         stepClickHandler = function (e) {
             var fadeOutStep = function (step) {
